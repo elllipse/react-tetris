@@ -51,7 +51,7 @@ class App extends Component {
     this.initNewElem()
   }
   initNewElem = () => {
-    console.log('INIT!')
+    console.log('init new elem!')
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setRandomElement();
     this.loopInterval = setInterval(this.gameLoop,1000);
@@ -101,8 +101,6 @@ class App extends Component {
         collision
       };
     }
-
-    console.log(this.state.activeRowIndex)
     
     this.setState({
       ...newStateObj
@@ -124,7 +122,7 @@ class App extends Component {
       },
       activeColumnIndex: 5,
       activeRowIndex: -2
-    },()=>console.log(this.state.activeRowIndex))
+    })
   }
   moveHorizontaly = (index) => {
     const {shapeArr} = this.state.currEl;
@@ -136,6 +134,13 @@ class App extends Component {
 
     this.setState({
       activeColumnIndex: index
+    },this.drawElem)
+  }
+  rotateElem = () => {
+    const {currEl} = this.state;
+    const nextElemenState = currEl.state === (elements[currEl.name].length - 1) ? 0 : currEl.state+1;
+    this.setState({
+      currEl: {...currEl, state: nextElemenState, shapeArr: elements[currEl.name][nextElemenState]}
     },this.drawElem)
   }
   onKeyDown = (e) => {
@@ -150,6 +155,9 @@ class App extends Component {
         break;
       case 'ArrowDown':
         this.moveDown();
+        break;
+      case 'ArrowUp':
+        this.rotateElem();
         break;
       default:
         return
