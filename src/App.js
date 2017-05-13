@@ -58,7 +58,6 @@ class App extends Component {
   }
   gameLoop = () => {
     this.moveDown();
-    this.drawElem();
   }
   moveDown = () => {
     const {currEl, activeRowIndex} = this.state;
@@ -68,7 +67,7 @@ class App extends Component {
     this.setState({
       activeRowIndex: newActiveRowIndex,
       currEl: {...currEl, step: currEl.step+1}
-    })
+    },this.drawElem())
 
   }
   drawElem = () => {
@@ -121,7 +120,8 @@ class App extends Component {
         colorId : randomId + 1, // colors ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f'];
         step: 0
       },
-      activeColumnIndex: 5
+      activeColumnIndex: 5,
+      activeRowIndex: -2
     })
   }
   moveHorizontaly = (index) => {
@@ -146,6 +146,11 @@ class App extends Component {
       case 'ArrowRight':
         this.moveHorizontaly(activeColumnIndex+1);
         break;
+      case 'ArrowDown':
+        this.moveDown();
+        break;
+      default:
+        return
     }
   }
 
