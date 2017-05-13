@@ -42,7 +42,8 @@ class App extends Component {
         step: 0
       },
       activeColumnIndex: 5,
-      activeRowIndex: -2
+      activeRowIndex: -2,
+      collision: false
     }
 
   }
@@ -53,7 +54,7 @@ class App extends Component {
     console.log('INIT!')
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setRandomElement();
-    this.loopInterval = setInterval(this.gameLoop,500);
+    this.loopInterval = setInterval(this.gameLoop,1000);
   }
   gameLoop = () => {
     this.moveDown();
@@ -103,7 +104,7 @@ class App extends Component {
     }
     
     this.setState({
-      fieldState: newStateObj.fieldState
+      ...newStateObj
     },()=>{if (newStateObj.collision) this.init()})
 
   }
@@ -129,6 +130,7 @@ class App extends Component {
     },this.drawElem)
   }
   onKeyDown = (e) => {
+    if (this.state.collision) return;
     let { activeColumnIndex } = this.state;
     switch (e.nativeEvent.code) {
       case 'ArrowLeft':
