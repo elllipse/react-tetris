@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Cell from './Cell';
-import elements from './elements';
+import {elements} from './elements';
 import './App.css';
 
-const defaultFieldState = () => [
+const blankState = () => {
+  return [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -27,12 +28,13 @@ const defaultFieldState = () => [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0]
       ];
+}
 
 class App extends Component {
   constructor() {
     super()
     this.state = {
-      fieldState : defaultFieldState(),
+      fieldState : blankState(),
       currEl: {
         name : 'O',
         state : 0,
@@ -40,26 +42,27 @@ class App extends Component {
         step: 0
       },
       activeColumnIndex: 5,
-      activeRowIndex: -1
+      activeRowIndex: -2
     }
+
   }
   componentDidMount() {
     this.init()
   }
   init = () => {
-    console.log('REINIT!')
+    console.log('INIT!')
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setRandomElement();
-    this.loopInterval = setInterval(this.gameLoop,100);
+    this.loopInterval = setInterval(this.gameLoop,500);
   }
   gameLoop = () => {
-    this.drawElem();
     this.moveDown();
+    this.drawElem();
   }
   moveDown = () => {
     const {currEl, activeRowIndex} = this.state;
     let newActiveRowIndex = currEl.step === 0 ? 
-          -elements[currEl.name][currEl.state].length : activeRowIndex+1;
+          -elements[currEl.name][currEl.state].length+1 : activeRowIndex+1;
     
     this.setState({
       activeRowIndex: newActiveRowIndex,
@@ -73,7 +76,7 @@ class App extends Component {
 
     function drawElement(prevArr, mainRow, mainColumn, el) {
       const currElArr = elements[el.name][el.state];
-      const newArr = defaultFieldState();
+      const newArr = blankState();
       const elemLength = currElArr.length
       const elemCenterRow = elemLength === 1 ? 0 : 1;
       let collision = false;
@@ -92,7 +95,7 @@ class App extends Component {
         }
           
       })
-
+      
       return {
         fieldState: newArr,
         collision
@@ -101,9 +104,7 @@ class App extends Component {
     
     this.setState({
       fieldState: newStateObj.fieldState
-    })
-
-    if (newStateObj.collision) this.init()
+    },()=>{if (newStateObj.collision) this.init()})
 
   }
   setRandomElement = () => {
@@ -120,11 +121,29 @@ class App extends Component {
       }
     })
   }
+  moveHorizontaly = (index) => {
+    console.log('index',index)
+    
+    this.setState({
+      activeColumnIndex: index
+    },this.drawElem)
+  }
+  onKeyDown = (e) => {
+    let { activeColumnIndex } = this.state;
+    switch (e.nativeEvent.code) {
+      case 'ArrowLeft':
+        this.moveHorizontaly(activeColumnIndex-1);
+        break;
+      case 'ArrowRight':
+        this.moveHorizontaly(activeColumnIndex+1);
+        break;
+    }
+  }
 
   render() {
     const {fieldState} = this.state;
     return (
-      <div className="App" onClick={this.gameLoop}>
+      <div className="App" onKeyDown={this.onKeyDown} tabIndex={0}>
           {fieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
       </div>
     );
