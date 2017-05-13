@@ -117,14 +117,21 @@ class App extends Component {
       currEl : {
         name : randomElName,
         state : randomState,
+        shapeArr: elements[randomElName][randomState],
         colorId : randomId + 1, // colors ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f'];
         step: 0
-      }
+      },
+      activeColumnIndex: 5
     })
   }
   moveHorizontaly = (index) => {
-    console.log('index',index)
-    
+    const {shapeArr} = this.state.currEl;
+    const isHaveLedge = (ledge) => shapeArr.some(row=>row.includes(ledge))
+
+    if (index === -1 || index === 10) return;
+    if (index === 0 && isHaveLedge(-1)) return;
+    if (index === 9 && isHaveLedge(1)) return;
+
     this.setState({
       activeColumnIndex: index
     },this.drawElem)
