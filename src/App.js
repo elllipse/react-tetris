@@ -126,7 +126,7 @@ class App extends Component {
   }
   moveHorizontaly = (index) => {
     const {shapeArr} = this.state.currEl;
-    const isHaveLedge = (ledge) => shapeArr.some(row=>row.includes(ledge))
+    const isHaveLedge = (ledge) => shapeArr.some(row=>row.includes(ledge));
 
     if (index === -1 || index === 10) return;
     if (index === 0 && isHaveLedge(-1)) return;
@@ -137,10 +137,18 @@ class App extends Component {
     },this.drawElem)
   }
   rotateElem = () => {
-    const {currEl} = this.state;
+    const {currEl, activeColumnIndex} = this.state;
     const nextElemenState = currEl.state === (elements[currEl.name].length - 1) ? 0 : currEl.state+1;
+    const nextElShapeArr = elements[currEl.name][nextElemenState];
+    const isHaveLedge = (ledge) => nextElShapeArr.some(row=>row.includes(ledge));
+    let nextActiveColumnIndex = activeColumnIndex;
+
+    if (activeColumnIndex === 0 && isHaveLedge(-1)) nextActiveColumnIndex = 1;
+    if (activeColumnIndex === 9 && isHaveLedge(1)) nextActiveColumnIndex = 8;
+
     this.setState({
-      currEl: {...currEl, state: nextElemenState, shapeArr: elements[currEl.name][nextElemenState]}
+      currEl: {...currEl, state: nextElemenState, shapeArr: nextElShapeArr},
+      activeColumnIndex: nextActiveColumnIndex
     },this.drawElem)
   }
   onKeyDown = (e) => {
