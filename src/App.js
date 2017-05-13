@@ -48,9 +48,9 @@ class App extends Component {
 
   }
   componentDidMount() {
-    this.init()
+    this.initNewElem()
   }
-  init = () => {
+  initNewElem = () => {
     console.log('INIT!')
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setRandomElement();
@@ -67,7 +67,7 @@ class App extends Component {
     this.setState({
       activeRowIndex: newActiveRowIndex,
       currEl: {...currEl, step: currEl.step+1}
-    },this.drawElem())
+    },this.drawElem)
 
   }
   drawElem = () => {
@@ -101,10 +101,12 @@ class App extends Component {
         collision
       };
     }
+
+    console.log(this.state.activeRowIndex)
     
     this.setState({
       ...newStateObj
-    },()=>{if (newStateObj.collision) this.init()})
+    },()=>{if (newStateObj.collision) this.initNewElem()})
 
   }
   setRandomElement = () => {
@@ -122,7 +124,7 @@ class App extends Component {
       },
       activeColumnIndex: 5,
       activeRowIndex: -2
-    })
+    },()=>console.log(this.state.activeRowIndex))
   }
   moveHorizontaly = (index) => {
     const {shapeArr} = this.state.currEl;
