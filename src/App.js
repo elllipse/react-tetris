@@ -75,13 +75,13 @@ class App extends Component {
               this.prevElemPos.push(point);
               if (!newCurrFieldState[currRow+1] || newCurrFieldState[currRow+1][currColumn] !== 0) {
                 collision = true;
-                this.prevElemPos = [];
               }
           })
         }
           
       })
       
+      if (collision) this.prevElemPos = [];
       return {
         currFieldState: newCurrFieldState,
         collision
