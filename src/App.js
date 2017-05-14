@@ -3,8 +3,7 @@ import Cell from './Cell';
 import {elements} from './elements';
 import './App.css';
 
-const blankState = () => {
-  return [
+const blankState = [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -28,14 +27,12 @@ const blankState = () => {
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0]
       ];
-}
 
 class App extends Component {
   constructor() {
     super()
     this.state = {
-      currElemFieldState : blankState(),
-      mainFieldState : blankState(),
+      currFieldState : blankState,
       currEl: {
         name : 'O',
         state : 0,
@@ -46,7 +43,7 @@ class App extends Component {
       activeRowIndex: -2,
       collision: false
     }
-
+    this.prevElemPos = [];
   }
   componentDidMount() {
     this.initNewElem()
@@ -76,24 +73,32 @@ class App extends Component {
 
   }
   drawElem = () => {
-    const { currEl, mainFieldState, activeColumnIndex, activeRowIndex} = this.state;
-    const newStateObj = drawElement(mainFieldState, activeRowIndex, activeColumnIndex, currEl);
+    const { currEl, currFieldState, activeColumnIndex, activeRowIndex} = this.state;
 
-    function drawElement(mainField, currElemRow, currElemColumn, el) {
+    const clearPrevElemPos = (posArr) => {
+      this.prevElemPos.forEach(pos=>currFieldState[pos[0]][pos[1]] = 0);
+      this.prevElemPos = [];
+    };
+
+    const drawElement = (currFieldState, currElemRow, currElemColumn, el) => {
       const currElArr = elements[el.name][el.state];
-      const newCurrElemFieldState = blankState();
+      const newCurrFieldState = currFieldState;
       const elemLength = currElArr.length;
       const elemCenterRow = elemLength === 1 ? 0 : 1;
       let collision = false;
 
+      if (this.prevElemPos.length > 0) clearPrevElemPos(this.prevElemPos);
+
       currElArr.forEach((row,i)=>{
         const currRow = currElemRow + (i - elemCenterRow);
-        if (currRow > -1 && currRow < newCurrElemFieldState.length) {
+        if (currRow > -1 && currRow < newCurrFieldState.length) {
           row.forEach(cell=>{
             const currColumn = currElemColumn + cell;
             if (currColumn > -1)
-              newCurrElemFieldState[currRow][currColumn] = el.colorId;
-              if (!newCurrElemFieldState[currRow+1] || newCurrElemFieldState[currRow+1][currColumn] !== 0) {
+              newCurrFieldState[currRow][currColumn] = el.colorId;
+              const point = [currRow,currColumn];
+              this.prevElemPos.push(point);
+              if (!newCurrFieldState[currRow+1] || newCurrFieldState[currRow+1][currColumn] !== 0) {
                 collision = true;
               }
           })
@@ -102,10 +107,12 @@ class App extends Component {
       })
       
       return {
-        currElemFieldState: newCurrElemFieldState,
+        currFieldState: newCurrFieldState,
         collision
       };
     }
+
+    const newStateObj = drawElement(currFieldState, activeRowIndex, activeColumnIndex, currEl);
     
     this.setState({
       ...newStateObj
@@ -178,10 +185,10 @@ class App extends Component {
   }
 
   render() {
-    const {currElemFieldState} = this.state;
+    const {currFieldState} = this.state;
     return (
       <div className="App" onKeyDown={this.onKeyDown} tabIndex={0}>
-          {currElemFieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
+          {currFieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
       </div>
     );
   }
