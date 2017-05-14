@@ -1,4 +1,4 @@
-const defaultFieldState =  [
+const blankState =  [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -99,5 +99,5 @@ const elements = {
 
 module.exports =  {
   elements,
-  defaultFieldState  
+  blankState  
 }
