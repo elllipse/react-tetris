@@ -112,8 +112,10 @@ class App extends Component {
       activeRowIndex: -2
     })
   }
-  isSideCollision = (side) => {
-    const {currEl : {shapeArr}, activeColumnIndex, activeRowIndex, currFieldState} = this.state;
+  //TODO refactor to get a value like {left:false,right:false,beforeLeft:false,afterRight:false}
+  isSideCollision = (side,shape) => { // shape - for check next shape while rotate
+    const { activeColumnIndex, activeRowIndex, currFieldState} = this.state;
+    const shapeArr = shape ? shape : this.state.currEl.shapeArr;
 
     let rowCorrIndex,
         blockCorrValue,
@@ -129,28 +131,34 @@ class App extends Component {
           rowCorrIndex = row === 0 ? -1 : row === 1 ? 0 : 1;
           blockIndex = side === 'right' ? shapeArr[row].length-1 : 0;
           corrValue = side === 'right' ? 1 : -1
+          if (shape) corrValue = 0;
           blockCorrValue = shapeArr[row][blockIndex] + corrValue;
           exactRow = activeRowIndex + rowCorrIndex;
           exactColumn = activeColumnIndex + blockCorrValue;
 
           blockToCheck = currFieldState[exactRow][exactColumn];
-          if (blockToCheck > 0 || blockToCheck === undefined) collision = true;
+          const isBlockFromPrev = this.prevElemPos.some(el=>el[0]===exactRow && el[1]===exactColumn);
+          console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
+          if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev) ) collision = true;
         }
     } else {
         blockIndex = side === 'right' ? shapeArr[0].length-1 : 0;
         corrValue = side === 'right' ? 1 : -1
+        if (shape) corrValue = 0;
         blockCorrValue = shapeArr[0][blockIndex] + corrValue;
         exactRow = activeRowIndex;
         exactColumn = activeColumnIndex + blockCorrValue;
 
-        const blockToCheck = currFieldState[exactRow][exactColumn];
-        if (blockToCheck > 0 || blockToCheck === undefined) collision = true;
+        blockToCheck = currFieldState[exactRow][exactColumn];
+        const isBlockFromPrev = this.prevElemPos.some(el=>el[0]===exactRow && el[1]===exactColumn);
+        console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
+        if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev) ) collision = true;
     }
 
     return collision
     
   }
-  moveHorizontaly = (direction) => {
+  moveHorizontally = (direction) => {
     if (this.isSideCollision(direction)) return;
     const {activeColumnIndex} = this.state;
     let index = direction === 'right' ? 1 : -1;
@@ -163,11 +171,19 @@ class App extends Component {
     const {currEl, activeColumnIndex} = this.state;
     const nextElemenState = currEl.state === (elements[currEl.name].length - 1) ? 0 : currEl.state+1;
     const nextElShapeArr = elements[currEl.name][nextElemenState];
-    const isHaveLedge = (ledge) => nextElShapeArr.some(row=>row.includes(ledge));
     let nextActiveColumnIndex = activeColumnIndex;
 
-    if (activeColumnIndex === 0 && isHaveLedge(-1)) nextActiveColumnIndex = 1;
-    if (activeColumnIndex === 9 && isHaveLedge(1)) nextActiveColumnIndex = 8;
+    console.log('nextElShapeArr',nextElShapeArr)
+
+    const leftCollision = this.isSideCollision('left',nextElShapeArr);
+    const rightCollision = this.isSideCollision('right',nextElShapeArr);
+
+    console.log('leftCollision',leftCollision);
+    console.log('rightCollision',rightCollision);
+
+    if (leftCollision && rightCollision) return;
+    if (leftCollision) nextActiveColumnIndex++;
+    if (rightCollision) nextActiveColumnIndex--;
 
     this.setState({
       currEl: {...currEl, state: nextElemenState, shapeArr: nextElShapeArr},
@@ -178,10 +194,10 @@ class App extends Component {
     if (this.state.collision) return;
     switch (e.nativeEvent.code) {
       case 'ArrowLeft':
-        this.moveHorizontaly('left');
+        this.moveHorizontally('left');
         break;
       case 'ArrowRight':
-        this.moveHorizontaly('right');
+        this.moveHorizontally('right');
         break;
       case 'ArrowDown':
         this.moveDown(true);
