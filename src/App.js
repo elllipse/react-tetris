@@ -34,7 +34,8 @@ class App extends Component {
   constructor() {
     super()
     this.state = {
-      fieldState : blankState(),
+      currElemFieldState : blankState(),
+      mainFieldState : blankState(),
       currEl: {
         name : 'O',
         state : 0,
@@ -75,12 +76,12 @@ class App extends Component {
 
   }
   drawElem = () => {
-    const { currEl, fieldState, activeColumnIndex, activeRowIndex} = this.state;
-    const newStateObj = drawElement(fieldState, activeRowIndex, activeColumnIndex, currEl);
+    const { currEl, currElemFieldState, activeColumnIndex, activeRowIndex} = this.state;
+    const newStateObj = drawElement(currElemFieldState, activeRowIndex, activeColumnIndex, currEl);
 
     function drawElement(prevArr, mainRow, mainColumn, el) {
       const currElArr = elements[el.name][el.state];
-      const newArr = blankState();
+      const newCurrElemFieldState = blankState();
       const elemLength = currElArr.length
       const elemCenterRow = elemLength === 1 ? 0 : 1;
       let collision = false;
@@ -91,8 +92,8 @@ class App extends Component {
           row.forEach(cell=>{
             const currColumn = mainColumn + cell;
             if (currColumn > -1)
-              newArr[currRow][currColumn] = el.colorId;
-              if (!newArr[currRow+1] || newArr[currRow+1][currColumn] !== 0) {
+              newCurrElemFieldState[currRow][currColumn] = el.colorId;
+              if (!newCurrElemFieldState[currRow+1] || newCurrElemFieldState[currRow+1][currColumn] !== 0) {
                 collision = true;
               }
           })
@@ -101,7 +102,7 @@ class App extends Component {
       })
       
       return {
-        fieldState: newArr,
+        currElemFieldState: newCurrElemFieldState,
         collision
       };
     }
@@ -177,10 +178,10 @@ class App extends Component {
   }
 
   render() {
-    const {fieldState} = this.state;
+    const {currElemFieldState} = this.state;
     return (
       <div className="App" onKeyDown={this.onKeyDown} tabIndex={0}>
-          {fieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
+          {currElemFieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
       </div>
     );
   }
