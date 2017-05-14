@@ -59,7 +59,9 @@ class App extends Component {
   gameLoop = () => {
     this.moveDown();
   }
-  moveDown = () => {
+  moveDown = (force) => {
+    if (force) clearInterval(this.loopInterval);
+    
     const {currEl, activeRowIndex} = this.state;
     let newActiveRowIndex = currEl.step === 0 ? 
           -elements[currEl.name][currEl.state].length+1 : activeRowIndex+1;
@@ -68,6 +70,8 @@ class App extends Component {
       activeRowIndex: newActiveRowIndex,
       currEl: {...currEl, step: currEl.step+1}
     },this.drawElem)
+
+    if (force) this.loopInterval = setInterval(this.gameLoop,1000);
 
   }
   drawElem = () => {
@@ -162,7 +166,7 @@ class App extends Component {
         this.moveHorizontaly(activeColumnIndex+1);
         break;
       case 'ArrowDown':
-        this.moveDown();
+        this.moveDown(true);
         break;
       case 'ArrowUp':
         this.rotateElem();
