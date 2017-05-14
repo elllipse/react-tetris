@@ -76,21 +76,21 @@ class App extends Component {
 
   }
   drawElem = () => {
-    const { currEl, currElemFieldState, activeColumnIndex, activeRowIndex} = this.state;
-    const newStateObj = drawElement(currElemFieldState, activeRowIndex, activeColumnIndex, currEl);
+    const { currEl, mainFieldState, activeColumnIndex, activeRowIndex} = this.state;
+    const newStateObj = drawElement(mainFieldState, activeRowIndex, activeColumnIndex, currEl);
 
-    function drawElement(prevArr, mainRow, mainColumn, el) {
+    function drawElement(mainField, currElemRow, currElemColumn, el) {
       const currElArr = elements[el.name][el.state];
       const newCurrElemFieldState = blankState();
-      const elemLength = currElArr.length
+      const elemLength = currElArr.length;
       const elemCenterRow = elemLength === 1 ? 0 : 1;
       let collision = false;
 
       currElArr.forEach((row,i)=>{
-        const currRow = mainRow + (i - elemCenterRow);
-        if (currRow > -1 && currRow < prevArr.length) {
+        const currRow = currElemRow + (i - elemCenterRow);
+        if (currRow > -1 && currRow < newCurrElemFieldState.length) {
           row.forEach(cell=>{
-            const currColumn = mainColumn + cell;
+            const currColumn = currElemColumn + cell;
             if (currColumn > -1)
               newCurrElemFieldState[currRow][currColumn] = el.colorId;
               if (!newCurrElemFieldState[currRow+1] || newCurrElemFieldState[currRow+1][currColumn] !== 0) {
