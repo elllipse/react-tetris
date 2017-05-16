@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-const colors = ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f'];
+const colors = ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f','#1abc9c','#e67e22'];
 
 export default class Cell extends Component{
 

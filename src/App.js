@@ -100,6 +100,8 @@ class App extends Component {
       const randomId = Math.floor(Math.random() * elKeys.length);
       const randomElName = elKeys[randomId];
       const randomState = Math.floor(Math.random() * elements[randomElName].length);
+      console.log('randomElName',randomElName);
+      console.log('randomState',randomState);
       this.setState({
         currEl: {
           name: randomElName,
@@ -112,12 +114,14 @@ class App extends Component {
         activeRowIndex: -2
       })
     }
-    //TODO refactor to get a value like {left:false,right:false,beforeLeft:false,afterRight:false}
-  isSideCollision = (shape) => { // shape - for check next shape while rotate
+   
+  isSideCollision = (shape) => {
+    //console.log('shape',shape);
     const { activeColumnIndex, activeRowIndex, currFieldState } = this.state;
     const shapeArr = shape;
 
     const testElementCollision = (side, isExact) => {
+      console.log('starting check - ' + side + ' ' + isExact);
       let rowCorrIndex,
         blockCorrValue,
         exactRow,
@@ -139,7 +143,7 @@ class App extends Component {
 
           blockToCheck = currFieldState[exactRow][exactColumn];
           const isBlockFromPrev = this.prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
-          //console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
+          // console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
           if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
         }
       } else {
@@ -152,10 +156,11 @@ class App extends Component {
 
         blockToCheck = currFieldState[exactRow][exactColumn];
         const isBlockFromPrev = this.prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
-        //console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
+        // console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
         if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
       }
 
+      console.log('will return - ', collision);
       return collision
     }
 
@@ -184,6 +189,7 @@ class App extends Component {
     let nextActiveColumnIndex = activeColumnIndex;
 
     const nextShapeCollision = this.isSideCollision(nextElShapeArr);
+    console.log('nextShapeCollision',nextShapeCollision)
     const leftCollision = nextShapeCollision['left'];
     const rightCollision = nextShapeCollision['right'];
     const afterRightCollision = nextShapeCollision['afterRight'];
