@@ -129,11 +129,13 @@ class App extends Component {
         blockToCheck,
         blockIndex,
         corrValue,
-        collision = false;
+        collision = false,
+        rowCorrIndexArr = [-1,0,1,2];
 
       if (shapeArr.length > 1) { // activeRowIndex will be in index === 1 of the shape
         for (var row = 0; row < shapeArr.length; row++) {
-          rowCorrIndex = row === 0 ? -1 : row === 1 ? 0 : 1;
+          rowCorrIndex = rowCorrIndexArr[row];
+
           blockIndex = side === 'right' ? shapeArr[row].length - 1 : 0;
           corrValue = side === 'right' ? 1 : -1;
           if (isExact) corrValue = 0;
