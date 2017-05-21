@@ -16,23 +16,39 @@ class App extends Component {
       },
       activeColumnIndex: 5,
       activeRowIndex: -2,
-      collision: false
+      bottomCollision: false
     }
     this.prevElemPos = [];
   }
+
   componentDidMount() {
     this.initNewElem()
   }
+
+  componentWillUnmount() {
+    if (this.bottomcollisionTimeout) clearTimeout(this.bottomcollisionTimeout);
+    if (this.loopInterval) clearInterval(this.loopInterval);
+  }
+
   initNewElem = () => {
+    this.prevElemPos = [];
     this.checkFieldForFullRow();
     console.log('init new elem!')
+
     if (this.loopInterval) clearInterval(this.loopInterval);
-    this.setRandomElement();
-    this.loopInterval = setInterval(this.gameLoop, 1000);
+    this.setState({
+      currEl: this.getRandomElement(),
+      activeColumnIndex: 5,
+      activeRowIndex: -2,
+      bottomCollision: false,
+    }, () =>  this.loopInterval = setInterval(this.gameLoop, 1000) )
   }
+
   gameLoop = () => {
+    console.log('game loop!')
     this.moveDown();
   }
+
   checkFieldForFullRow = () => {
     const currField = this.state.currFieldState;
     let fullRowIndexArr = [];
@@ -46,7 +62,6 @@ class App extends Component {
           currField.splice(i,1);
           currField.splice(0,0,[0,0,0,0,0,0,0,0,0,0]);
         });
-        console.log(currField);
         this.setState({
           currFieldState: currField
         })
@@ -54,6 +69,7 @@ class App extends Component {
 
   }
   moveDown = (force) => {
+    if (this.state.bottomCollision) return;
     if (force) clearInterval(this.loopInterval);
 
     const { currEl, activeRowIndex } = this.state;
@@ -69,6 +85,7 @@ class App extends Component {
 
   }
   drawElem = () => {
+    console.log('this.prevElemPos',''+this.prevElemPos)
     const { currEl, currFieldState, activeColumnIndex, activeRowIndex } = this.state;
 
     const clearPrevElemPos = (posArr) => {
@@ -81,7 +98,7 @@ class App extends Component {
       const newCurrFieldState = currFieldState;
       const elemLength = currElArr.length;
       const elemCenterRow = elemLength === 1 ? 0 : 1;
-      let collision = false;
+      let bottomCollision = false;
 
       if (this.prevElemPos.length > 0) clearPrevElemPos(this.prevElemPos);
 
@@ -95,17 +112,17 @@ class App extends Component {
             const point = [currRow, currColumn];
             this.prevElemPos.push(point);
             if (!newCurrFieldState[currRow + 1] || newCurrFieldState[currRow + 1][currColumn] !== 0) {
-              collision = true;
+              bottomCollision = true;
             }
           })
         }
 
       })
 
-      if (collision) this.prevElemPos = [];
+    
       return {
         currFieldState: newCurrFieldState,
-        collision
+        bottomCollision
       };
     }
 
@@ -113,27 +130,29 @@ class App extends Component {
 
     this.setState({
       ...newStateObj
-    }, () => { if (newStateObj.collision) this.initNewElem() })
+    }, ()=>{
+      if (this.state.bottomCollision) {
+        this.bottomcollisionTimeout = setTimeout(()=>{
+          if (this.state.bottomCollision) this.initNewElem()
+        },1000)
+      } 
+    })
 
   }
-  setRandomElement = () => {
+  getRandomElement = () => {
       const elKeys = Object.keys(elements);
       const randomId = Math.floor(Math.random() * elKeys.length);
       const randomElName = elKeys[randomId];
       const randomState = Math.floor(Math.random() * elements[randomElName].length);
       console.log('randomElName',randomElName);
       console.log('randomState',randomState);
-      this.setState({
-        currEl: {
+       return {
           name: randomElName,
           state: randomState,
           shapeArr: elements[randomElName][randomState],
           colorId: randomId + 1, // colors ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f'];
           step: 0
-        },
-        activeColumnIndex: 5,
-        activeRowIndex: -2
-      })
+        }
     }
    
   isSideCollision = (shape) => {
@@ -190,13 +209,11 @@ class App extends Component {
           }
           
           rowCorrIndex = rowCorrIndexArr[row];
-
           exactRow = activeRowIndex + rowCorrIndex;
           exactColumn = activeColumnIndex + getCorrColumnIndex(side,currRow);
 
           blockToCheck = currFieldState[exactRow][exactColumn];
           const isBlockFromPrev = this.prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
-          // console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
           if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
         }
       } else {
@@ -206,7 +223,6 @@ class App extends Component {
 
         blockToCheck = currFieldState[exactRow][exactColumn];
         const isBlockFromPrev = this.prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
-        // console.log(`blockToCheck = currFieldState[${exactRow}][${exactColumn}] ${currFieldState[exactRow][exactColumn]};`)
         if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
       }
 
@@ -246,6 +262,7 @@ class App extends Component {
     }, this.drawElem)
   }
   rotateElem = () => {
+    if (this.state.collision) return;
     const { currEl, activeColumnIndex } = this.state;
     if (elements[currEl.name].length === 1) return;
 
@@ -277,7 +294,7 @@ class App extends Component {
     }, this.drawElem)
   }
   onKeyDown = (e) => {
-    if (this.state.collision) return;
+    //if (this.state.collision) return;
     switch (e.nativeEvent.code) {
       case 'ArrowLeft':
         this.moveHorizontally('left');
