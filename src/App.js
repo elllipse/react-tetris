@@ -120,28 +120,58 @@ class App extends Component {
     const { activeColumnIndex, activeRowIndex, currFieldState } = this.state;
     const shapeArr = shape;
 
-    const testElementCollision = (side, isExact) => {
-      console.log('starting check - ' + side + ' ' + isExact);
+    const getCorrColumnIndex = (side,row) => { 
+        switch (side) {
+            case 'left':
+              return row[0];
+
+            case 'right':
+              return row[row.length - 1];
+
+            case 'beforeLeft':
+              return row[0] - 1;
+
+            case 'twoBeforeLeft':
+              return row[0] - 2;
+
+            case 'afterLeft':
+              return row[0] + 1;
+
+            case 'beforeRight':
+              return row[row.length - 1] - 1;
+
+            case 'afterRight':
+              return row[row.length - 1] + 1;
+
+            default:
+              return false;
+          }
+      }
+
+    const testElementCollision = (side) => {
       let rowCorrIndex,
-        blockCorrValue,
+        currRow,
         exactRow,
         exactColumn,
         blockToCheck,
-        blockIndex,
-        corrValue,
         collision = false,
         rowCorrIndexArr = [-1,0,1,2];
-
+      
       if (shapeArr.length > 1) { // activeRowIndex will be in index === 1 of the shape
         for (var row = 0; row < shapeArr.length; row++) {
+          currRow = shapeArr[row];
+
+          if (currRow.length === 1 && row !== shapeArr.length - 1) { // if not last row -> go to next because in this row left === right;
+            row++
+            currRow = shapeArr[row];
+          } else if (currRow.length === 1 && row === shapeArr.length - 1) {
+            return collision;
+          }
+          
           rowCorrIndex = rowCorrIndexArr[row];
 
-          blockIndex = side === 'right' ? shapeArr[row].length - 1 : 0;
-          corrValue = side === 'right' ? 1 : -1;
-          if (isExact) corrValue = 0;
-          blockCorrValue = shapeArr[row][blockIndex] + corrValue;
           exactRow = activeRowIndex + rowCorrIndex;
-          exactColumn = activeColumnIndex + blockCorrValue;
+          exactColumn = activeColumnIndex + getCorrColumnIndex(side,currRow);
 
           blockToCheck = currFieldState[exactRow][exactColumn];
           const isBlockFromPrev = this.prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
@@ -149,12 +179,9 @@ class App extends Component {
           if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
         }
       } else {
-        blockIndex = side === 'right' ? shapeArr[0].length - 1 : 0;
-        corrValue = side === 'right' ? 1 : -1;
-        if (isExact) corrValue = 0;
-        blockCorrValue = shapeArr[0][blockIndex] + corrValue;
+        currRow = shapeArr[0];
         exactRow = activeRowIndex;
-        exactColumn = activeColumnIndex + blockCorrValue;
+        exactColumn = activeColumnIndex + getCorrColumnIndex(side,currRow);
 
         blockToCheck = currFieldState[exactRow][exactColumn];
         const isBlockFromPrev = this.prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
@@ -162,22 +189,35 @@ class App extends Component {
         if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
       }
 
-      console.log('will return - ', collision);
-      return collision
+      return collision;
     }
 
+      const left = testElementCollision('left');
+      const right = testElementCollision('right');
+      const beforeRight = shapeArr[0].length === 4 && testElementCollision('beforeRight');
+      const afterLeft = shapeArr[0].length === 4 && testElementCollision('afterLeft');
+      const beforeLeft = testElementCollision('beforeLeft');
+      const twoBeforeLeft = (right && beforeRight) && testElementCollision('twoBeforeLeft');
+      const afterRight = testElementCollision('afterRight');
+
     return {
-      left: testElementCollision('left', true),
-      right: testElementCollision('right', true),
-      beforeLeft: testElementCollision('left'),
-      afterRight: testElementCollision('right')
+      left,
+      right,
+      beforeLeft,
+      twoBeforeLeft,
+      afterRight,
+      beforeRight,
+      afterLeft
     }
 
   }
+
   moveHorizontally = (direction) => {
     const { activeColumnIndex, currEl: { shapeArr } } = this.state;
     const area = direction === 'right' ? 'afterRight' : 'beforeLeft';
-    if (this.isSideCollision(shapeArr)[area]) return;
+    const collision = this.isSideCollision(shapeArr);
+
+    if (collision[area]) return;
     let index = direction === 'right' ? 1 : -1;
 
     this.setState({
@@ -186,23 +226,30 @@ class App extends Component {
   }
   rotateElem = () => {
     const { currEl, activeColumnIndex } = this.state;
+    if (elements[currEl.name].length === 1) return;
+
     const nextElemenState = currEl.state === (elements[currEl.name].length - 1) ? 0 : currEl.state + 1;
     const nextElShapeArr = elements[currEl.name][nextElemenState];
     let nextActiveColumnIndex = activeColumnIndex;
 
     const nextShapeCollision = this.isSideCollision(nextElShapeArr);
     console.log('nextShapeCollision',nextShapeCollision)
+
     const leftCollision = nextShapeCollision['left'];
     const rightCollision = nextShapeCollision['right'];
     const afterRightCollision = nextShapeCollision['afterRight'];
+    const beforeRightCollision = nextShapeCollision['beforeRight'];
     const beforeLeftCollision = nextShapeCollision['beforeLeft'];
+    const twoBeforeLeftCollision = nextShapeCollision['twoBeforeLeft'];
 
     if (leftCollision && rightCollision) return;
     if (leftCollision && afterRightCollision) return;
     if (rightCollision && beforeLeftCollision) return;
+    if ( (beforeRightCollision || rightCollision) && (beforeLeftCollision || twoBeforeLeftCollision) ) return;
 
-    if (leftCollision && !afterRightCollision) nextActiveColumnIndex++;
-    if (rightCollision && !beforeLeftCollision) nextActiveColumnIndex--;
+    if (beforeRightCollision && (!beforeLeftCollision && !twoBeforeLeftCollision) ) nextActiveColumnIndex -= 2;
+    else if (leftCollision && !afterRightCollision) nextActiveColumnIndex++;
+    else if (rightCollision && !beforeLeftCollision) nextActiveColumnIndex--;
 
     this.setState({
       currEl: {...currEl, state: nextElemenState, shapeArr: nextElShapeArr },
