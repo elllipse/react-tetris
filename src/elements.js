@@ -1,4 +1,4 @@
-const blankState =  [
+const getBlankState = () =>  [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -127,5 +127,5 @@ const elements = {
 
 module.exports =  {
   elements,
-  blankState  
+  getBlankState  
 }

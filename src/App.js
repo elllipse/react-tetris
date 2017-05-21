@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import Cell from './Cell';
-import { blankState, elements } from './elements';
+import { getBlankState, elements } from './elements';
 import './App.css';
 
 class App extends Component {
   constructor() {
     super()
     this.state = {
-      currFieldState: blankState,
+      currFieldState: getBlankState(),
       currEl: {
         name: 'O',
         state: 0,
@@ -24,6 +24,7 @@ class App extends Component {
     this.initNewElem()
   }
   initNewElem = () => {
+    this.checkFieldForFullRow;
     console.log('init new elem!')
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setRandomElement();
@@ -31,6 +32,9 @@ class App extends Component {
   }
   gameLoop = () => {
     this.moveDown();
+  }
+  checkFieldForFullRow = () => {
+
   }
   moveDown = (force) => {
     if (force) clearInterval(this.loopInterval);
@@ -233,7 +237,6 @@ class App extends Component {
     let nextActiveColumnIndex = activeColumnIndex;
 
     const nextShapeCollision = this.isSideCollision(nextElShapeArr);
-    console.log('nextShapeCollision',nextShapeCollision)
 
     const leftCollision = nextShapeCollision['left'];
     const rightCollision = nextShapeCollision['right'];
