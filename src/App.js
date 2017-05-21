@@ -18,7 +18,10 @@ class App extends Component {
       activeRowIndex: -2,
       bottomCollision: false
     }
+
     this.prevElemPos = [];
+    this.bottomcollisionTimeout = null;
+    this.loopInterval = null;
   }
 
   componentDidMount() {
@@ -85,7 +88,6 @@ class App extends Component {
 
   }
   drawElem = () => {
-    console.log('this.prevElemPos',''+this.prevElemPos)
     const { currEl, currFieldState, activeColumnIndex, activeRowIndex } = this.state;
 
     const clearPrevElemPos = (posArr) => {
@@ -200,13 +202,6 @@ class App extends Component {
       if (shapeArr.length > 1) { // activeRowIndex will be in index === 1 of the shape
         for (var row = 0; row < shapeArr.length; row++) {
           currRow = shapeArr[row];
-
-          if (currRow.length === 1 && row !== shapeArr.length - 1) { // if not last row -> go to next because in this row left === right;
-            row++
-            currRow = shapeArr[row];
-          } else if (currRow.length === 1 && row === shapeArr.length - 1) {
-            return collision;
-          }
           
           rowCorrIndex = rowCorrIndexArr[row];
           exactRow = activeRowIndex + rowCorrIndex;
@@ -271,6 +266,7 @@ class App extends Component {
     let nextActiveColumnIndex = activeColumnIndex;
 
     const nextShapeCollision = this.isSideCollision(nextElShapeArr);
+    console.log('nextShapeCollision',nextShapeCollision)
 
     const leftCollision = nextShapeCollision['left'];
     const rightCollision = nextShapeCollision['right'];
@@ -278,6 +274,8 @@ class App extends Component {
     const beforeRightCollision = nextShapeCollision['beforeRight'];
     const beforeLeftCollision = nextShapeCollision['beforeLeft'];
     const twoBeforeLeftCollision = nextShapeCollision['twoBeforeLeft'];
+
+    //*******************************TODO - L[1] COLLISION CHECK **************************************** 
 
     if (leftCollision && rightCollision) return;
     if (leftCollision && afterRightCollision) return;
