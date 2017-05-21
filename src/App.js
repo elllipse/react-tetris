@@ -24,7 +24,7 @@ class App extends Component {
     this.initNewElem()
   }
   initNewElem = () => {
-    this.checkFieldForFullRow;
+    this.checkFieldForFullRow();
     console.log('init new elem!')
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setRandomElement();
@@ -34,6 +34,23 @@ class App extends Component {
     this.moveDown();
   }
   checkFieldForFullRow = () => {
+    const currField = this.state.currFieldState;
+    let fullRowIndexArr = [];
+    currField.forEach((row,i)=>{
+      if (row.every(block=>block>0)) fullRowIndexArr.push(i);
+    })
+
+    if (fullRowIndexArr.length) {
+        console.log('fullRowIndexArr', fullRowIndexArr)
+        fullRowIndexArr.forEach(i=>{
+          currField.splice(i,1);
+          currField.splice(0,0,[0,0,0,0,0,0,0,0,0,0]);
+        });
+        console.log(currField);
+        this.setState({
+          currFieldState: currField
+        })
+    }
 
   }
   moveDown = (force) => {
