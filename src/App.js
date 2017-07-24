@@ -10,8 +10,8 @@ class App extends Component {
     this.state = {
       currFieldState: getBlankState(),
       currEl: {
-        name: 'O',
-        state: 0,
+        name: 'I',
+        state: 1,
         colorId: 1,
         step: 0
       },
@@ -39,9 +39,19 @@ class App extends Component {
     this.checkFieldForFullRow();
     console.log('init new elem!')
 
+    const testElem = (name, state) => {
+      return {
+        name: name,
+        state: state,
+        shapeArr: elements[name][state],
+        colorId: 1, // colors ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f'];
+        step: 0
+      };
+    }
+
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setState({
-      currEl: this.getRandomElement(),
+      currEl: testElem('I', 1) || this.getRandomElement(),
       activeColumnIndex: 5,
       activeRowIndex: -2,
       bottomCollision: false,
@@ -182,7 +192,6 @@ class App extends Component {
     let nextActiveColumnIndex = activeColumnIndex;
 
     const nextShapeCollision = isSideCollision({ shapeArr: nextElShapeArr, activeColumnIndex, activeRowIndex, currFieldState, prevElemPos: this.prevElemPos });
-    console.log('nextShapeCollision', nextShapeCollision)
 
     const leftCollision = nextShapeCollision['left'];
     const rightCollision = nextShapeCollision['right'];

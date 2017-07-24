@@ -65,11 +65,21 @@
 
     const left = testElementCollision('left');
     const right = testElementCollision('right');
-    const beforeRight = shapeArr[0].length === 4 && testElementCollision('beforeRight');
-    const afterLeft = shapeArr[0].length === 4 && testElementCollision('afterLeft');
+    const beforeRight = testElementCollision('beforeRight'); //shapeArr[0].length === 4 &&
+    const afterLeft = testElementCollision('afterLeft'); //shapeArr[0].length === 4 &&
     const beforeLeft = testElementCollision('beforeLeft');
-    const twoBeforeLeft = (right && beforeRight) && testElementCollision('twoBeforeLeft');
+    const twoBeforeLeft = testElementCollision('twoBeforeLeft'); //(right && beforeRight) && 
     const afterRight = testElementCollision('afterRight');
+
+    console.log('collision object', {
+      left,
+      right,
+      beforeLeft,
+      twoBeforeLeft,
+      afterRight,
+      beforeRight,
+      afterLeft
+    })
 
     return {
       left,
@@ -80,6 +90,7 @@
       beforeRight,
       afterLeft
     }
+
 
   }
 
