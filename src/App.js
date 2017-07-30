@@ -51,7 +51,7 @@ class App extends Component {
 
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setState({
-      currEl: testElem('I', 1) || this.getRandomElement(),
+      currEl: this.getRandomElement(),
       activeColumnIndex: 5,
       activeRowIndex: -2,
       bottomCollision: false,
@@ -71,7 +71,6 @@ class App extends Component {
     })
 
     if (fullRowIndexArr.length) {
-      console.log('fullRowIndexArr', fullRowIndexArr)
       fullRowIndexArr.forEach(i => {
         currField.splice(i, 1);
         currField.splice(0, 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -205,7 +204,7 @@ class App extends Component {
     if (leftCollision && rightCollision) return;
     if (leftCollision && afterRightCollision) return;
     if (rightCollision && beforeLeftCollision) return;
-    if ((beforeRightCollision || rightCollision) && (beforeLeftCollision || twoBeforeLeftCollision)) return;
+    //if ((beforeRightCollision || rightCollision) && (beforeLeftCollision || twoBeforeLeftCollision)) return;
 
     if (beforeRightCollision && (!beforeLeftCollision && !twoBeforeLeftCollision)) nextActiveColumnIndex -= 2;
     else if (leftCollision && !afterRightCollision) nextActiveColumnIndex++;

@@ -1,6 +1,8 @@
   const collisionChecker = (config) => {
     const { shapeArr, activeColumnIndex, activeRowIndex, currFieldState, prevElemPos } = config;
 
+    const maxRowLength = () => Math.max(...shapeArr.map(el => el.length));
+
     const getCorrColumnIndex = (side, row) => {
       switch (side) {
         case 'left':
@@ -47,8 +49,12 @@
           exactColumn = activeColumnIndex + getCorrColumnIndex(side, currRow);
 
           blockToCheck = currFieldState[exactRow][exactColumn];
+
+          if (currRow.length === 1 && blockToCheck === undefined && currRow.length !== maxRowLength()) continue; // for shapes L and J (exclude I) near walls
+
           const isBlockFromPrev = prevElemPos.some(el => el[0] === exactRow && el[1] === exactColumn);
           if (blockToCheck === undefined || (blockToCheck > 0 && !isBlockFromPrev)) collision = true;
+
         }
       } else {
         currRow = shapeArr[0];
@@ -70,16 +76,6 @@
     const beforeLeft = testElementCollision('beforeLeft');
     const twoBeforeLeft = testElementCollision('twoBeforeLeft'); //(right && beforeRight) && 
     const afterRight = testElementCollision('afterRight');
-
-    console.log('collision object', {
-      left,
-      right,
-      beforeLeft,
-      twoBeforeLeft,
-      afterRight,
-      beforeRight,
-      afterLeft
-    })
 
     return {
       left,

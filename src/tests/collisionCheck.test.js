@@ -55,5 +55,19 @@ describe('collisions check on empty field', () => {
     })
   });
 
+  it('check L[1] 1 cell right outside', () => {
+    const shapeArr = elements['L'][1];
+    const options = { shapeArr, activeColumnIndex: 9, activeRowIndex: 2, currFieldState: getBlankState(), prevElemPos: [] };
+    expect(isSideCollision(options)).toEqual({
+      left: false,
+      right: true,
+      beforeLeft: false,
+      twoBeforeLeft: false,
+      afterRight: true,
+      beforeRight: false,
+      afterLeft: false
+    })
+  });
+
 
 });
