@@ -2,7 +2,24 @@ import React, { Component } from 'react';
 import Cell from './Cell';
 import { getBlankState, elements } from './elements';
 import isSideCollision from './collisionChecker';
-import './App.css';
+
+
+const appStyles = {
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
+  transform: 'translate(-50%,-50%)',
+  WebkitTransform: 'translate(-50%,-50%)',
+  MozTransform: 'translate(-50%,-50%)',
+  MsTransform: 'translate(-50%,-50%)',
+  OTransform: 'translate(-50%,-50%)',
+  fontSize: '0',
+  lineHeight: '0',
+  outline: 'none',
+  width: '280px',
+  height: '600px',
+  textAlign: 'center'
+}
 
 class App extends Component {
   constructor() {
@@ -247,7 +264,7 @@ class App extends Component {
   render() {
     const { currFieldState, gameOver } = this.state;
     return (
-      <div className="App" onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
+      <div style={appStyles} onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
           {currFieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
       </div>
     );
