@@ -17,7 +17,8 @@ class App extends Component {
       },
       activeColumnIndex: 5,
       activeRowIndex: -2,
-      bottomCollision: false
+      bottomCollision: false,
+      gameOver: false
     }
 
     this.prevElemPos = [];
@@ -61,6 +62,12 @@ class App extends Component {
   gameLoop = () => {
     console.log('game loop!')
     this.moveDown();
+  }
+
+  gameOver = () => {
+    console.log('gameOver!!!!')
+    clearInterval(this.loopInterval)
+    this.setState({ gameOver: true })
   }
 
   checkFieldForFullRow = () => {
@@ -119,18 +126,18 @@ class App extends Component {
         if (currRow > -1 && currRow < newCurrFieldState.length) {
           row.forEach(cell => {
             const currColumn = currElemColumn + cell;
-            if (currColumn > -1)
-              newCurrFieldState[currRow][currColumn] = el.colorId;
             const point = [currRow, currColumn];
+            if (currColumn > -1) newCurrFieldState[currRow][currColumn] = el.colorId;
             this.prevElemPos.push(point);
             if (!newCurrFieldState[currRow + 1] || newCurrFieldState[currRow + 1][currColumn] !== 0) {
-              bottomCollision = true;
+              bottomCollision = currRow === 0 ? 'atFirstRow' : true;
             }
           })
         }
 
       })
 
+      if (bottomCollision === 'atFirstRow') return false;
 
       return {
         currFieldState: newCurrFieldState,
@@ -139,6 +146,8 @@ class App extends Component {
     }
 
     const newStateObj = drawElement(currFieldState, activeRowIndex, activeColumnIndex, currEl);
+
+    if (!newStateObj) return this.gameOver();
 
     this.setState({
       ...newStateObj
@@ -236,9 +245,9 @@ class App extends Component {
   }
 
   render() {
-    const { currFieldState } = this.state;
+    const { currFieldState, gameOver } = this.state;
     return (
-      <div className="App" onKeyDown={this.onKeyDown} tabIndex={0}>
+      <div className="App" onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
           {currFieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
       </div>
     );
