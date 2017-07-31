@@ -94,7 +94,7 @@ class App extends Component {
       currEl: {...currEl, step: currEl.step + 1 }
     }, this.drawElem)
 
-    //if (force) this.loopInterval = setInterval(this.gameLoop,1000);
+    if (force) this.loopInterval = setInterval(this.gameLoop, 1000);
 
   }
   drawElem = () => {

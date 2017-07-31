@@ -48,6 +48,11 @@
           exactRow = activeRowIndex + rowCorrIndex;
           exactColumn = activeColumnIndex + getCorrColumnIndex(side, currRow);
 
+          if (exactRow < 0 || exactColumn < 0) {
+            collision = true;
+            return collision;
+          }
+
           blockToCheck = currFieldState[exactRow][exactColumn];
 
           if (currRow.length === 1 && blockToCheck === undefined && currRow.length !== maxRowLength()) continue; // for shapes L and J (exclude I) near walls
