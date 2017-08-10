@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import Cell from './Cell';
-import { getBlankState, elements } from './elements';
-import isSideCollision from './collisionChecker';
-require('./styles.css')
+import Cell from '../Cell/Cell';
+import GameOverMenu from '../GameOverMenu/GameOverMenu';
+import { getBlankState, elements } from '../../data/elements';
+import isSideCollision from '../../utils/collisionChecker';
+require('./App.css')
 
 class App extends Component {
   constructor() {
@@ -285,11 +286,5 @@ class App extends Component {
     );
   }
 }
-
-const GameOverMenu = ({ restartGame }) => (
-  <div className='game_over'>
-    <div className='btn_restart' onClick={restartGame}>play again</div>
-  </div>
-)
 
 export default App;
