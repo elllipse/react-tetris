@@ -35,6 +35,10 @@ class App extends Component {
     if (this.loopInterval) clearInterval(this.loopInterval);
   }
 
+  restartGame = () => {
+    this.setState({ gameOver: false }, () => this.initNewElem())
+  }
+
   initNewElem = () => {
     this.prevElemPos = [];
     this.checkFieldForFullRow();
@@ -275,15 +279,16 @@ class App extends Component {
           ))}
         </div>
 
-        {gameOver && <GameOverMenu/>}
+        {gameOver && <GameOverMenu restartGame={this.restartGame}/>}
 
       </div>
     );
   }
 }
 
-const GameOverMenu = () => (
+const GameOverMenu = ({ restartGame }) => (
   <div className='game_over'>
+    <div className='btn_restart' onClick={restartGame}>play again</div>
   </div>
 )
 
