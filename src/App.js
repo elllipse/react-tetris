@@ -2,24 +2,7 @@ import React, { Component } from 'react';
 import Cell from './Cell';
 import { getBlankState, elements } from './elements';
 import isSideCollision from './collisionChecker';
-
-
-const appStyles = {
-  position: 'absolute',
-  left: '50%',
-  top: '50%',
-  transform: 'translate(-50%,-50%)',
-  WebkitTransform: 'translate(-50%,-50%)',
-  MozTransform: 'translate(-50%,-50%)',
-  MsTransform: 'translate(-50%,-50%)',
-  OTransform: 'translate(-50%,-50%)',
-  fontSize: '0',
-  lineHeight: '0',
-  outline: 'none',
-  width: '280px',
-  height: '600px',
-  textAlign: 'center'
-}
+require('./styles.css')
 
 class App extends Component {
   constructor() {
@@ -82,11 +65,12 @@ class App extends Component {
   }
 
   clearField = () => {
+    const self = this;
     const { currFieldState } = this.state;
     const blocksCoords = [];
-    currFieldState.forEach((row, rowI) => row.forEach((block, blockI) => block > 0 ? blocksCoords.push([rowI, blockI]) : false));
-    const self = this;
-    console.log(blocksCoords)
+    currFieldState.forEach((row, rowI) =>
+      row.forEach((block, blockI) =>
+        block > 0 ? blocksCoords.push([rowI, blockI]) : false));
 
     function recursivelyClearBlocks() {
       const blockPos = blocksCoords.shift();
@@ -282,11 +266,25 @@ class App extends Component {
   render() {
     const { currFieldState, gameOver } = this.state;
     return (
-      <div style={appStyles} onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
-          {currFieldState.map((row,rowI)=>row.map((el,i)=><Cell id={''+rowI+i} type={el} />))}
+      <div className='app' onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
+
+        <div className='field'> 
+          {currFieldState.map((row,rowI)=>
+            row.map((el,i)=>
+              <Cell id={''+rowI+i} type={el} />
+          ))}
+        </div>
+
+        {gameOver && <GameOverMenu/>}
+
       </div>
     );
   }
 }
+
+const GameOverMenu = () => (
+  <div className='game_over'>
+  </div>
+)
 
 export default App;
