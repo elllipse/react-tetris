@@ -13,7 +13,4 @@ npm start
 
 ## Demo
 
-```
 [gh-pages](https://elllipse.github.io/react-tetris)
-
-```
