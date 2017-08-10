@@ -81,10 +81,28 @@ class App extends Component {
     this.moveDown();
   }
 
+  clearField = () => {
+    const { currFieldState } = this.state;
+    const blocksCoords = [];
+    currFieldState.forEach((row, rowI) => row.forEach((block, blockI) => block > 0 ? blocksCoords.push([rowI, blockI]) : false));
+    const self = this;
+    console.log(blocksCoords)
+
+    function recursivelyClearBlocks() {
+      const blockPos = blocksCoords.shift();
+      if (!blockPos) return;
+      currFieldState[blockPos[0]][blockPos[1]] = 0;
+      self.setState({ currFieldState }, () => setTimeout(recursivelyClearBlocks, 50))
+    }
+
+    recursivelyClearBlocks()
+  }
+
   gameOver = () => {
     console.log('gameOver!!!!')
     clearInterval(this.loopInterval)
     this.setState({ gameOver: true })
+    this.clearField()
   }
 
   checkFieldForFullRow = () => {
