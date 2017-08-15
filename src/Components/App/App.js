@@ -46,16 +46,6 @@ class App extends Component {
     this.checkFieldForFullRow();
     console.log('init new elem!')
 
-    const testElem = (name, state) => {
-      return {
-        name: name,
-        state: state,
-        shapeArr: elements[name][state],
-        colorId: 1, // colors ['#fff','#2ecc71','#3498db','#9b59b6','#e74c3c','#f1c40f'];
-        step: 0
-      };
-    }
-
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setState({
       currEl: this.getRandomElement(),
