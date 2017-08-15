@@ -35,7 +35,7 @@ class App extends Component {
   }
 
   restartGame = () => {
-    this.setState({ gameOver: false }, () => this.initNewElem())
+    this.setState({ gameOver: false, score: 0 }, () => this.initNewElem())
   }
 
   initNewElem = () => {
@@ -226,12 +226,9 @@ class App extends Component {
     const beforeLeftCollision = nextShapeCollision['beforeLeft'];
     const twoBeforeLeftCollision = nextShapeCollision['twoBeforeLeft'];
 
-    //*******************************TODO - L[1] COLLISION CHECK **************************************** 
-
     if (leftCollision && rightCollision) return;
     if (leftCollision && afterRightCollision) return;
     if (rightCollision && beforeLeftCollision) return;
-    //if ((beforeRightCollision || rightCollision) && (beforeLeftCollision || twoBeforeLeftCollision)) return;
 
     if (beforeRightCollision && (!beforeLeftCollision && !twoBeforeLeftCollision)) nextActiveColumnIndex -= 2;
     else if (leftCollision && !afterRightCollision) nextActiveColumnIndex++;
@@ -243,7 +240,6 @@ class App extends Component {
     }, this.drawElem)
   }
   onKeyDown = (e) => {
-    //if (this.state.collision) return;
     switch (e.nativeEvent.code) {
       case 'ArrowLeft':
         this.moveHorizontally('left');
