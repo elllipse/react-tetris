@@ -11,12 +11,8 @@ class App extends Component {
     super()
     this.state = {
       currFieldState: getBlankState(),
-      currEl: {
-        name: 'I',
-        state: 1,
-        colorId: 1,
-        step: 0
-      },
+      currEl: this.getRandomElement(),
+      nextElem: this.getRandomElement(),
       activeColumnIndex: 5,
       activeRowIndex: -2,
       bottomCollision: false,
@@ -42,13 +38,17 @@ class App extends Component {
   }
 
   initNewElem = () => {
+    const { nextElem } = this.state;
+    const newElem = nextElem || this.getRandomElement();
+    const newNextElem = this.getRandomElement();
     this.prevElemPos = [];
     this.checkFieldForFullRow();
     console.log('init new elem!')
 
     if (this.loopInterval) clearInterval(this.loopInterval);
     this.setState({
-      currEl: this.getRandomElement(),
+      currEl: newElem,
+      nextElem: newNextElem,
       activeColumnIndex: 5,
       activeRowIndex: -2,
       bottomCollision: false,
@@ -260,8 +260,8 @@ class App extends Component {
   }
 
   render() {
-    const { currFieldState, gameOver, currEl } = this.state;
-    const { name: elName, state: elState } = currEl;
+    const { currFieldState, gameOver, nextElem } = this.state;
+    const { name: elName, state: elState } = nextElem;
 
     return (
       <div className='app' onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
