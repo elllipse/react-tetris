@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cell from '../Cell/Cell';
 import GameOverMenu from '../GameOverMenu/GameOverMenu';
+import InfoBlock from '../InfoBlock/InfoBlock';
 import { getBlankState, elements } from '../../data/elements';
 import isSideCollision from '../../utils/collisionChecker';
 require('./App.css')
@@ -269,15 +270,21 @@ class App extends Component {
   }
 
   render() {
-    const { currFieldState, gameOver } = this.state;
+    const { currFieldState, gameOver, currEl } = this.state;
+    const { name: elName, state: elState } = currEl;
+
     return (
       <div className='app' onKeyDown={ gameOver ? null : this.onKeyDown} tabIndex={0}>
 
         <div className='field'> 
+
+          <InfoBlock shape={elements[elName][elState]}/>
+
           {currFieldState.map((row,rowI)=>
             row.map((el,i)=>
               <Cell id={''+rowI+i} type={el} />
           ))}
+          
         </div>
 
         {gameOver && <GameOverMenu restartGame={this.restartGame}/>}
