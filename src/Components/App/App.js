@@ -16,6 +16,7 @@ class App extends Component {
       activeColumnIndex: 5,
       activeRowIndex: -2,
       bottomCollision: false,
+      score: 0,
       gameOver: false
     }
 
@@ -86,8 +87,9 @@ class App extends Component {
   }
 
   checkFieldForFullRow = () => {
-    const currField = this.state.currFieldState;
+    let { currFieldState: currField, score } = this.state;
     let fullRowIndexArr = [];
+
     currField.forEach((row, i) => {
       if (row.every(block => block > 0)) fullRowIndexArr.push(i);
     })
@@ -98,7 +100,8 @@ class App extends Component {
         currField.splice(0, 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       });
       this.setState({
-        currFieldState: currField
+        currFieldState: currField,
+        score: score += fullRowIndexArr.length * 100
       })
     }
 
@@ -260,7 +263,7 @@ class App extends Component {
   }
 
   render() {
-    const { currFieldState, gameOver, nextElem } = this.state;
+    const { currFieldState, gameOver, nextElem, score } = this.state;
     const { name: elName, state: elState } = nextElem;
 
     return (
@@ -268,7 +271,7 @@ class App extends Component {
 
         <div className='field'> 
 
-          <InfoBlock shape={elements[elName][elState]}/>
+          <InfoBlock score={score} nextShape={elements[elName][elState]}/>
 
           {currFieldState.map((row,rowI)=>
             row.map((el,i)=>

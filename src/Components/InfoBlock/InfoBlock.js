@@ -27,8 +27,8 @@ export default class InfoBlock extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { shape } = nextProps;
-    this.drawElem(shape)
+    const { nextShape } = nextProps;
+    this.drawElem(nextShape)
   }
 
   drawElem = (shape) => {
@@ -55,11 +55,12 @@ export default class InfoBlock extends Component {
 
   render() {
     const { currFieldState } = this.state;
+    const { score } = this.props;
 
     return <div className='info_block' onClick={this.drawElem}>
       <div className='info_block_section info_block_section-left'>
         <div>score</div>
-        <div className='info_block_score'>100</div>
+        <div className='info_block_score'>{score}</div>
       </div>
       <div className='info_block_section info_block_section-right'>
         <div>next</div>
